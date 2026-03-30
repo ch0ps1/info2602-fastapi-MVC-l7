@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Request, Response, Form
 from sqlmodel import select
 from app.database import SessionDep
 from app.models import *
+from app.models.user import User, Todo
 from app.utilities import flash
 from app.auth import encrypt_password, verify_password, create_access_token, AuthDep
 from fastapi.security import OAuth2PasswordRequestForm
@@ -87,3 +88,40 @@ async def logout(request: Request, response: Response):
     )
     
     return response
+
+@auth_router.get("/todos", response_class=HTMLResponse)
+async def get_todos(
+    request: Request,
+    db: SessionDep,
+    user: AuthDep
+):
+    statement = select(Todo).where(Todo.user_id == user.id)
+    todos = db.exec(statement).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="todos.html",
+        context={
+            "todos": todos,
+            "user": user
+        }
+    )
+
+@auth_router.post("/todos")
+async def create_todo(
+    request: Request,
+    db: SessionDep,
+    user: AuthDep,
+    title: str = Form(...)
+):
+    new_todo = Todo(
+        title=title,
+        user_id=user.id
+    )
+
+    db.add(new_todo)
+    db.commit()
+
+    flash(request, "Todo added successfully!", "success")
+
+    return RedirectResponse(url="/todos", status_code=status.HTTP_303_SEE_OTHER)
