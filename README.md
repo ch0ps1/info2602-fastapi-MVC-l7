@@ -6,7 +6,7 @@ A FastAPI template for info2602 students based on the [fullstack fastapi templat
 
 ### Heading 3
 
-this is normal text
+this is normal text 1
 
 -this is a bullet point
 
