@@ -89,7 +89,7 @@ async def logout(request: Request, response: Response):
     
     return response
 
-@auth_router.post("/todos", response_class=HTMLResponse)
+@auth_router.get("/todos", response_class=HTMLResponse)
 async def get_todos(
     request: Request,
     db: SessionDep,
