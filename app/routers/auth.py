@@ -99,11 +99,11 @@ async def get_todos(
     todos = db.exec(statement).all()
 
     return templates.TemplateResponse(
-        "todos.html",
-        {
-            "request": request,
-            "todos": todos,
-            "user": user
+        request=request,
+        name="todos.html",
+        context={
+            "user": user,
+            "todos": todos
         }
     )
 
